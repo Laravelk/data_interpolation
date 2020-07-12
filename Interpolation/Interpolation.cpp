@@ -18,14 +18,14 @@ void Interpolation::cubicInterpolation(std::vector<double> x,
 
     double step = 20.0f / 41.0f / 5.0f;
     double current = -10.0f; // x
-    for (int i = 0; i < 41 * 5; i++) {
+    /*for (int i = 0; i < 41 * 5; i++) {
         double inner_current = -10.0f; // y
         for (int j = 0; j < 41 * 5; j++) {
             if (inner_current == -10.0f) {
-               std::cerr << Derivative::derivative_yy(current, inner_current, interpolator) << "," << std::endl;
+               std::cerr << Derivative::derivative_with_steps(current, inner_current, interpolator, step) << "," << std::endl;
             }
             inner_current += step;
         }
         current += step;
-    }
+    }*/
 }

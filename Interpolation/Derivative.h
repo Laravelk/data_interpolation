@@ -12,6 +12,48 @@ public:
      * реализация для функций двух переменных
      * */
 
+    static std::vector<double> get_steps(std::vector<double> x) {
+        std::vector<double> steps;
+        steps.reserve(x.size() - 1);
+        for (unsigned long i = 0; i < x.size() - 1; i++) {
+            steps.push_back(abs(x[i + 1] - x[i]));
+        }
+        return steps;
+    }
+
+    /* derivative with steps */
+    static std::vector<double> derivative_with_steps(std::vector<double> x, std::vector<double> steps,
+            _2D::BicubicInterpolator<double> interpolator) {
+        std::vector<double> derivative;
+        const double delta = 0.001f;
+        for (auto v_x : x) {
+            double dir = interpolator(v_x, 0);
+            derivative.push_back(dir);
+        }
+        return derivative;
+    }
+
+    /* derivative vector */
+    static std::vector<double> derivative_xx_const_y(std::vector<double> x, double y, _2D::BicubicInterpolator<double> interpolator) {
+        std::vector<double> derivative;
+        for (auto v_x : x) {
+            double dir = (interpolator(v_x + 20.0f / 41.0f, y) - 2 * interpolator(v_x, y) + interpolator(v_x - 20.0f / 41.0f, y)) / (20.0f / 41.0f * 20.0f / 41.0f);
+            std::cerr << v_x << ": " << dir << std::endl;
+            derivative.push_back(dir);
+        }
+        return derivative;
+    }
+
+    static std::vector<double> derivative_xx_const_y(std::vector<double> x, double y, double f(double f_x, double f_y)) {
+        std::vector<double> derivative;
+        for (auto v_x : x) {
+            double dir = (f(v_x + 20.0f / 41.0f, y) - 2 * f(v_x, y) + f(v_x - 20.0f / 41.0f, y)) / (20.0f / 41.0f * 20.0f / 41.0f);
+            std::cerr << v_x << ": " << dir << std::endl;
+            derivative.push_back(dir);
+        }
+        return derivative;
+    }
+
     /* derivative by any function with two argument */
     static double derivative_x(double x, double y, double f(double f_x, double f_y)) {
         return (f(x + EPS, y) - f(x - EPS, y)) / (2 * EPS);
@@ -57,6 +99,24 @@ public:
                                 _2D::BicubicInterpolator<double> interpolator) {
         return (derivative_y(x, y + EPS, interpolator) -
                 derivative_y(x, y - EPS, interpolator)) / (2 * EPS);
+    }
+
+    /* second variant for derivative */
+    static double derivative_xxs(double x, double y, _2D::BicubicInterpolator<double> interpolator, double grid_step) {
+        //double u0 = x - EPS;
+        //double u1 = x;
+        //double u2 = x + EPS;
+        //return (interpolator(u0, y) - 2 * interpolator(u1, y) + interpolator(u2, y)) / (grid_step * grid_step);
+        return (interpolator(x + EPS, y) - interpolator(x - EPS, y)) / (grid_step * grid_step);
+        //return (u0 - 2 * u1 + u2) / (grid_step * grid_step);
+    }
+
+    static double derivative_xxs(double x, double y, double f(double x, double y), double grid_step) {
+        double u0 = x - EPS;
+        double u1 = x;
+        double u2 = x + EPS;
+        return (f(u0, y) - 2 * f(u1, y) + f(u2, y)) / (grid_step * grid_step);
+        //return (u0 - 2 * u1 + u2) / (grid_step * grid_step);
     }
 
 private:
